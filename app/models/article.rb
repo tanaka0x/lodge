@@ -25,6 +25,16 @@ class Article < ActiveRecord::Base
   acts_as_taggable
   alias_method :__save, :save
 
+  # ===== SunSpot =====
+  searchable do
+    text :title, :body, :stored => true
+    string :tags, :multiple => true do
+      tags.map do |t|
+        t.name.downcase
+      end
+    end
+  end
+
   # ===== Class methods =====
 
   def self.recent_list(page=1)
@@ -42,11 +52,11 @@ class Article < ActiveRecord::Base
       .order(:created_at => :desc)
   end
 
-  def self.search(query, page=1)
-    query = "%#{query.gsub(/([%_])/){"\\" + $1}}%"
-    Article.where("title like ?", query)
-        .page(page).per(PER_SIZE).order(:created_at => :desc)
-  end
+  # def self.search(query, page=1)
+  #   query = "%#{query.gsub(/([%_])/){"\\" + $1}}%"
+  #   Article.where("title like ?", query)
+  #       .page(page).per(PER_SIZE).order(:created_at => :desc)
+  # end
 
   def self.stocked_by(user, page=1)
     user.stocked_articles
