@@ -1,0 +1,9 @@
+<%= link_to 'New hook', new_integration_slack_incoming_webhook_path %>
+
+<% @hooks.each do |hook| %>
+  <div>
+    <p><%= hook.url %></p>
+    
+    <%= button_to 'Delete', hook, method: :delete %>
+  <div>
+<% end %>
