@@ -44,6 +44,12 @@ Rails.application.routes.draw do
   resources :comments, :only => [:create, :update, :destroy]
   resources :images, only: :create, defaults: { format: 'json' }
 
+  namespace :integration do
+    namespace :slack do
+      resources :incoming_webhooks
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
