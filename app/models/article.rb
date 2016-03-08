@@ -25,6 +25,8 @@ class Article < ActiveRecord::Base
   acts_as_taggable
   alias_method :__save, :save
 
+  after_commit :execute_integrations_hook
+
   # ===== Class methods =====
 
   def self.recent_list(page=1)
@@ -118,5 +120,24 @@ class Article < ActiveRecord::Base
       .includes(:taggings)
       .references(:taggings)
       .where(taggings: {taggable_type: 'Article', context: 'tags'})
+  end
+
+  private
+
+  def execute_integrations_hook
+
+    if transaction_include_any_action? [:create]
+      Integration::Slack::IncomingWebhook.where(on_article_posted: true).each do |hook|
+        hook.article = self
+        hook.post
+      end
+    end
+
+    if transaction_include_any_action? [:update]
+      Integration::Slack::IncomingWebhook.where(on_article_edited: true).each do |hook|
+        hook.article = self
+        hook.post
+      end
+    end
   end
 end
