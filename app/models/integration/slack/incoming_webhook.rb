@@ -14,8 +14,9 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
   def payload
     _payload = {}
     _payload[:channel] = channel unless channel.blank?
-    _payload[:username] = username unless username.blank?
+    _payload[:username] = username || 'LodgeBot'
     _payload[:icon_emoji] = icon_emoji unless icon_emoji.blank?
+    _payload[:icon_url] = icon_url unless icon_url.blank?
     _payload[:attachments] = [{
       fallback: replaced_text,
       # pretext: replaced_text,
