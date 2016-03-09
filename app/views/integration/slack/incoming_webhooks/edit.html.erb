@@ -1,0 +1,89 @@
+<h3>Edit hook: Slack Incoming Webhook</h3>
+<h4><%= @hook.name %></h4>
+
+<%= form_for @hook do |f| %>
+  <div class="form-group">
+    <%= f.label :name %><br>
+    <%= f.text_field :name, class: ["form-control"], placeholder: 'NewPost' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :url %><br>
+    <%= f.text_field :url, class: ["form-control"], placeholder: 'Incoming webhook URL' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :text %><br>
+    <%= f.text_field :text, class: ["form-control"], placeholder: 'A New Post Arrived!' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :channel %><br>
+    <%= f.text_field :channel, class: ["form-control"], placeholder: '#lodge' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :username %><br>
+    <%= f.text_field :username, class: ["form-control"], placeholder: 'LodgeBot', required: true %>
+  </div>
+
+  
+  <div>
+    <span>Events</span>
+    <div class="checkbox">
+      <%= f.label :on_article_stocked do%>
+        <%= f.check_box :on_article_posted %>
+	<%= @hook.class.human_attribute_name :on_article_posted %>
+      <% end %>
+    </div>
+
+    <div class="checkbox">
+      <%= f.label :on_article_stocked do%>
+        <%= f.check_box :on_article_edited %>
+	<%= @hook.class.human_attribute_name :on_article_edited %>
+      <% end %>
+    </div>
+
+    <div class="checkbox">
+      <%= f.label :on_article_stocked do%>
+        <%= f.check_box :on_article_commented %>
+	<%= @hook.class.human_attribute_name :on_article_commented %>
+      <% end %>
+    </div>
+
+    <div class="checkbox">
+      <%= f.label :on_article_stocked do%>
+        <%= f.check_box :on_article_stocked %>
+	<%= @hook.class.human_attribute_name :on_article_stocked%>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<span class="panel-title">
+	  <a data-toggle="collapse" href="#options">Options</a>
+	</span>
+      </div>
+      <div id="options" class="panel-collapse collapse">
+	<div class="panel-body">
+	  <div class="form-group">
+	    <%= f.label :icon_emoji %> (Optional) <%= link_to 'cheat sheet', 'http://www.emoji-cheat-sheet.com/' %> <br>
+	    <%= f.text_field :icon_emoji, class: ["form-control"], placeholder: ':squirrel:' %>
+	  </div>
+
+	  <div class="form-group">
+	    <%= f.label :icon_url %> (Optional)<br>
+	    <%= f.text_field :icon_url, class: ["form-control"], placeholder: 'http://example.com/icon.png' %>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit class: ["btn", "btn-success"] %>
+  </div>
+<% end %>
+
