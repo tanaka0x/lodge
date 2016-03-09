@@ -33,7 +33,15 @@ class Integration::Slack::IncomingWebhooksController < ApplicationController
   end
 
   def update
-
+    respond_to do |format|
+      if @hook.update_attributes(incoming_webhook_params)
+        format.html { redirect_to @hook, notice: 'Hook was successfully updated.' }
+        format.json { render :show, status: :ok, location: @hook }
+      else
+        format.html { render :edit }
+        format.json { render json: @hook.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def destroy
