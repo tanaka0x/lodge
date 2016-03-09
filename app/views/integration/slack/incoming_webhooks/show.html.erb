@@ -1,9 +1,29 @@
+<h3><%= @hook.name %></h3>
 <table>
   <tbody>
     <tr>
-      <td><%= @hook.url %></td>
+      <td>URL</td><td><%= @hook.url %></td>
     </tr>
 
+    <tr>
+      <td>Text</td><td><%= @hook.text %></td>
+    </tr>
+    
+    <tr>
+      <td>Channel</td><td><%= @hook.channel %></td>
+    </tr>
+
+    <tr>
+      <td>User name</td><td><%= @hook.username %></td>
+    </tr>
+
+    <tr>
+      <td>Emoji</td><td><%= @hook.icon_emoji %></td>
+    </tr>
+
+    <tr>
+      <td>Image URL</td><td><%= @hook.icon_url %></td>
+    </tr>
     <tr>
     </tr>
   </tbody>
