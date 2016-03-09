@@ -8,6 +8,10 @@ class IntegrationsController < ApplicationController
   private
 
   def set_integrations
-    @integrations = [:slack_incoming_webhook]
+    @integrations = [{
+      name: 'Slack: Incoming webhooks',
+      url: polymorphic_path(Integration::Slack::IncomingWebhook),
+      image_path: 'Slack-icon.png' 
+   }]
   end
 end

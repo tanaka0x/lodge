@@ -3,7 +3,10 @@
 <ul>
   <% @integrations.each do |integration| %>
     <li>
-      <span><%= integration.to_s %></span>
+      <% unless integration[:image_path].blank? %>
+        <%= link_to image_tag( integration[:image_path], { width: 60, height: 60 }), integration[:url] %>
+      <% end %>
+      <span><%= link_to integration[:name], integration[:url] %></span>
     </li>
   <% end %>
 </ul>
