@@ -46,6 +46,9 @@
                         <li>
                           <%= link_to t("users.edit_profile"), edit_user_registration_path, :class => '' %>
                         </li>
+			<li>
+			  <%= link_to t("integrations.index"), integrations_path, :class => '' %>
+			</li>
                         <li>
                           <%= link_to t("users.logout"), destroy_user_session_path, method: :delete, :class => ''  %>
                         </li>

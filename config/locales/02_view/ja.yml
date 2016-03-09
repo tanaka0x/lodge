@@ -149,3 +149,6 @@ ja:
     aliases: 別名
   update_histories:
     current_article: "'%{article_title}'の編集履歴"
+  integrations:
+    index: 連携
+

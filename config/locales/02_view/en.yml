@@ -149,3 +149,5 @@ en:
     aliases: Aliases
   update_histories:
     current_article: "Update history of '%{article_title}'"
+  integrations:
+    index: Integrations
