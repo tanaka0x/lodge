@@ -49,7 +49,7 @@ class Integration::Slack::IncomingWebhooksController < ApplicationController
 
   def incoming_webhook_params
     params.require(:integration_slack_incoming_webhook)
-      .permit(:url, :text, :channel, :username, :icon_emoji, :icon_url,
+      .permit(:name, :url, :text, :channel, :username, :icon_emoji, :icon_url,
               :on_article_posted, :on_article_edited, :on_article_commented, :on_article_stocked)
   end
 
