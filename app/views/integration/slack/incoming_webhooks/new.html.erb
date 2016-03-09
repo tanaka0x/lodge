@@ -3,22 +3,22 @@
 <%= form_for @hook do |f| %>
   <div class="form-group">
     <%= f.label :name %><br>
-    <%= f.text_field :name, class: ["form-control"] %>
+    <%= f.text_field :name, class: ["form-control"], placeholder: 'NewPost' %>
   </div>
 
   <div class="form-group">
     <%= f.label :url %><br>
-    <%= f.text_field :url, class: ["form-control"] %>
+    <%= f.text_field :url, class: ["form-control"], placeholder: 'Incoming webhook URL' %>
   </div>
 
   <div class="form-group">
     <%= f.label :text %><br>
-    <%= f.text_field :text, class: ["form-control"] %>
+    <%= f.text_field :text, class: ["form-control"], placeholder: 'A New Post Arrived!' %>
   </div>
 
   <div class="form-group">
     <%= f.label :channel %><br>
-    <%= f.text_field :channel, class: ["form-control"] %>
+    <%= f.text_field :channel, class: ["form-control"], placeholder: '#lodge' %>
   </div>
 
   <div>
