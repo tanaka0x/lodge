@@ -1,9 +1,17 @@
-<%= link_to 'New hook', new_integration_slack_incoming_webhook_path %>
+<%= link_to 'Create a new hook', new_integration_slack_incoming_webhook_path %>
 
-<% @hooks.each do |hook| %>
-  <div>
-    <p><%= hook.url %></p>
-    
-    <%= button_to 'Delete', hook, method: :delete %>
-  <div>
-<% end %>
+<table class="table">
+  <tbody>
+    <% @hooks.each do |hook| %>
+    <tr>
+      <td>
+	<%= link_to hook.name, hook %>
+      </td>
+      <td>
+	<%= link_to 'Edit', edit_integration_slack_incoming_webhook_path(hook), class: 'btn btn-default' %> 
+	<%= link_to 'Delete', hook, method: :delete, class: 'btn btn-danger' %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
