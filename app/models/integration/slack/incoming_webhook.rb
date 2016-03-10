@@ -10,8 +10,8 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
   scope :on_article_stocked, -> { where(on_article_stocked: true) }
 
   def post(obj)
-    setup_by obj
-    slack = Slack::Incoming::Webhooks.new(url, payload)
+    options = setup_by obj
+    slack = Slack::Incoming::Webhooks.new(url, options)
     slack.post replaced_text
   end
 
@@ -26,15 +26,23 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
     when Comment
       @comment = obj
       @article = comment.article
+      return payload({
+        attachments: {
+          fallback: "#{@comment.user.name} commented to <#{article_url}|#{@article.title}>",
+          author_name: @comment.user.name
+        }
+      })
     when Stock
       @stock = obj
       @article = stock.article
     else
       raise "#{obj.class} is not supported by #{self.class}"
     end
+
+    payload
   end
 
-  def payload
+  def payload(overwrite_attributes = {})
     _payload = {}
     _payload[:channel] = channel unless channel.blank?
     _payload[:username] = username || 'LodgeBot'
@@ -46,7 +54,7 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
       author_name: @article.try(:user).try(:name) || '',
       title: @article.try(:title) || '',
       title_link: article_url      
-    }]
+    }.merge(overwrite_attributes)]
 
     _payload
   end
@@ -75,7 +83,8 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
     @@text_placeholders.push({ pattern: pattern, placement: placement })
   end
 
-  append_replacement '#{article.title}', -> { @article.try(:title).to_s }
+  append_replacement '#{article.title}', -> { @article.try(:title) }
   append_replacement '#{article.url}', -> { article_url }
-  append_replacement '#{article.user}', -> { @article.user.try(:name) }
+  append_replacement '#{article.user}', -> { @article.try(:user).name }
+  append_replacement '#{comment.user}', -> { @comment.try(:user).name }
 end

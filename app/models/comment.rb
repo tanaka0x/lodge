@@ -7,6 +7,8 @@ class Comment < ActiveRecord::Base
 
   validates :body, presence: true
 
+  after_commit :execute_integrations_hook
+
   def create_notification(state)
     article = self.article
     notification = CommentNotification.create!(
@@ -30,6 +32,16 @@ class Comment < ActiveRecord::Base
     NotificationTarget.destroy_all(notification_id: notifications.map {|n| n.id }, user_id: current_user.id)
     notifications.each do |notification|
       notification.destroy! if notification.notification_targets.length == 0
+    end
+  end
+
+  private
+
+  def execute_integrations_hook
+    if transaction_include_any_action? [:create]
+      Integration::Slack::IncomingWebhook.on_article_commented.each do |hook|
+        hook.post self
+      end
     end
   end
 end
