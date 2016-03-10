@@ -35,6 +35,11 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
     when Stock
       @stock = obj
       @article = stock.article
+      return payload({
+        attachments: {
+          fallback: "#{@stock.user.name} has stocked <#{article_url}|#{@article.title}>",
+        }
+      })
     else
       raise "#{obj.class} is not supported by #{self.class}"
     end
@@ -71,7 +76,7 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
 
     result = text
     @@text_placeholders.each do |p|
-      result.gsub!(p[:pattern], instance_exec(&p[:placement]))
+      result.gsub!(p[:pattern], instance_exec(&p[:placement]).to_s)
     end
     
     result
@@ -85,6 +90,7 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
 
   append_replacement '#{article.title}', -> { @article.try(:title) }
   append_replacement '#{article.url}', -> { article_url }
-  append_replacement '#{article.user}', -> { @article.try(:user).name }
-  append_replacement '#{comment.user}', -> { @comment.try(:user).name }
+  append_replacement '#{article.user}', -> { @article.try(:user).try(:name) }
+  append_replacement '#{comment.user}', -> { @comment.try(:user).try(:name) }
+  append_replacement '#{stock.user}', -> { @stock.try(:user).try(:name) }
 end
