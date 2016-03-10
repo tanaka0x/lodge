@@ -1,15 +1,38 @@
 class Integration::Slack::IncomingWebhook < ActiveRecord::Base
-  attr_accessor :article, :comment
+  attr_accessor :article, :comment, :stock
 
   validates :url, presence: true
   validates :text, presence: true
 
-  def post
+  scope :on_article_posted, -> { where(on_article_posted: true) }
+  scope :on_article_edited, -> { where(on_article_edited: true) }
+  scope :on_article_commented, -> { where(on_article_commented: true) }
+  scope :on_article_stocked, -> { where(on_article_stocked: true) }
+
+  def post(obj)
+    setup_by obj
     slack = Slack::Incoming::Webhooks.new(url, payload)
     slack.post replaced_text
   end
 
   private
+
+
+
+  def setup_by(obj)
+    case obj
+    when Article
+      @article = obj
+    when Comment
+      @comment = obj
+      @article = comment.article
+    when Stock
+      @stock = obj
+      @article = stock.article
+    else
+      raise "#{obj.class} is not supported by #{self.class}"
+    end
+  end
 
   def payload
     _payload = {}
@@ -20,8 +43,8 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
     _payload[:attachments] = [{
       fallback: replaced_text,
       # pretext: replaced_text,
-      author_name: article.try(:user).try(:name) || '',
-      title: article.try(:title) || '',
+      author_name: @article.try(:user).try(:name) || '',
+      title: @article.try(:title) || '',
       title_link: article_url      
     }]
 
@@ -29,17 +52,30 @@ class Integration::Slack::IncomingWebhook < ActiveRecord::Base
   end
 
   def article_url
-    return if article.nil?
+    return if @article.nil?
 
     Rails.application.routes.url_helpers
-      .article_url(article, host: Rails.application.config.action_mailer.default_url_options[:host])
+      .article_url(@article, host: Rails.application.config.action_mailer.default_url_options[:host])
   end
 
   def replaced_text
-    return if article.nil?
+    return if @article.nil?
 
-    text.gsub('#{article.title}', article.title.to_s)
-      .gsub('#{article.url}', article_url)
-      .gsub('#{article.user}', article.user.try(:name))
+    result = text
+    @@text_placeholders.each do |p|
+      result.gsub!(p[:pattern], instance_exec(&p[:placement]))
+    end
+    
+    result
   end
+
+  @@text_placeholders = []
+  def self.append_replacement(pattern, placement)
+    @@text_placeholders = [] unless @@text_placeholders.is_a? Array
+    @@text_placeholders.push({ pattern: pattern, placement: placement })
+  end
+
+  append_replacement '#{article.title}', -> { @article.try(:title).to_s }
+  append_replacement '#{article.url}', -> { article_url }
+  append_replacement '#{article.user}', -> { @article.user.try(:name) }
 end

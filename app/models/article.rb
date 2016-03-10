@@ -127,16 +127,14 @@ class Article < ActiveRecord::Base
   def execute_integrations_hook
 
     if transaction_include_any_action? [:create]
-      Integration::Slack::IncomingWebhook.where(on_article_posted: true).each do |hook|
-        hook.article = self
-        hook.post
+      Integration::Slack::IncomingWebhook.on_article_posted.each do |hook|
+        hook.post self
       end
     end
 
     if transaction_include_any_action? [:update]
-      Integration::Slack::IncomingWebhook.where(on_article_edited: true).each do |hook|
-        hook.article = self
-        hook.post
+      Integration::Slack::IncomingWebhook.on_article_edited.each do |hook|
+        hook.post self
       end
     end
   end
